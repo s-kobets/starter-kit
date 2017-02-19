@@ -7,6 +7,7 @@ const args = require('minimist')(process.argv.slice(2));
 const StyleLintPlugin = require('stylelint-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 // ENV: 'dev', 'dist'
 const ENV = args.env || 'dev';
@@ -26,18 +27,13 @@ let plugins = [
 		filename: 'main.css',
 		allChunks: true 
 	}),
-	// new webpack.optimize.CommonsChunkPlugin('jquery.min', 'jquery.min.js', Infinity),
-	// Set some JS libs to global scope
-	// new CopyWebpackPlugin([ 
-	// 	{ from: './bower_components/jquery/jquery.min.js', to: './' }
-	// ]),
-
-	// new webpack.ProvidePlugin({
-	// 	moment: 'moment',
-	// 	$: 'jquery',
-	// 	jQuery: 'jquery'
-	// }),
-	// new webpack.optimize.DedupePlugin(),
+	//one HTML file
+    new HtmlWebpackPlugin({
+        filename: 'index.html',
+        inject : true,
+        template: './static_src/index.html',
+        chunks: 'filename'
+    })
 ];
 
 if (ENV === 'dev') {
@@ -100,7 +96,6 @@ module.exports = {
 							loader: 'postcss-loader',
 							options: {
 								plugins: function (webpack) {
-									console.log(webpack);
 									const cssDir = path.dirname(this.resource).split(path.sep);
 									const widgetName = cssDir[cssDir.length - 3];
 
