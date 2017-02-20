@@ -3,22 +3,33 @@
 const fs = require('fs');
 const path = require('path');
 const webpack = require('webpack');
-const args = require('minimist')(process.argv.slice(2));
 const StyleLintPlugin = require('stylelint-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 // ENV: 'dev', 'dist'
-const ENV = args.env || 'dev';
-const API_HOST = args['api-host'] || '';
+const ENV = {
+	production: 'production',
+	development: 'development'
+};
+
+const isDev = process.env.NODE_ENV !== ENV.production;
+
+const definePlugins = {
+	'process.env.version': new Date().getTime(),
+	'process.env.NODE_ENV': JSON.stringify(isDev ? ENV.development : ENV.production)
+};
+if (process.argv.find(a => (/API_HOST/.test(a))) === undefined) {
+	definePlugins['process.env.API_HOST'] = JSON.stringify('');
+}
+if (process.argv.find(a => (/AUTH_HOST/.test(a))) === undefined) {
+	definePlugins['process.env.AUTH_HOST'] = JSON.stringify('https://my.mastergrad.com/auth/sign-in/');
+}
 
 // Default plugins
 let plugins = [
-	new webpack.DefinePlugin({
-		'process.env.version': new Date().getTime(),
-		'process.env.API_HOST': '"' + API_HOST + '"'
-	}),
+	new webpack.DefinePlugin(definePlugins),
 	// Lint CSS
 	new StyleLintPlugin({
 		files: 'static_src/css/**/*.css'
@@ -36,11 +47,11 @@ let plugins = [
     })
 ];
 
-if (ENV === 'dev') {
+if (isDev) {
 	// Development plugins
 	plugins = plugins.concat([
 	]);
-} else if (ENV === 'dist') {
+} else {
 	// Dist plugins
 	plugins = plugins.concat([
 		new webpack.DefinePlugin({
@@ -99,7 +110,7 @@ module.exports = {
 									const cssDir = path.dirname(this.resource).split(path.sep);
 									const widgetName = cssDir[cssDir.length - 3];
 
-									if (ENV === 'dev') {
+									if (isDev) {
 										return [
 											// postcss-import for webpack watch
 											require('postcss-import')({addDependencyTo: webpack}),
