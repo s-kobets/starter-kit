@@ -7,6 +7,7 @@ const StyleLintPlugin = require('stylelint-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 
 // ENV: 'dev', 'dist'
 const ENV = {
@@ -57,7 +58,7 @@ if (isDev) {
 		new webpack.DefinePlugin({
 			'process.env.NODE_ENV': '"production"'
 		}),
-		new webpack.optimize.UglifyJsPlugin({compress: {warnings: false}, output: {comments: false}, sourceMap: true}),
+		new UglifyJSPlugin(),
 		new webpack.optimize.AggressiveMergingPlugin()
 	]);
 }
