@@ -41,9 +41,9 @@ let plugins = [
 	}),
 	//one HTML file
     new HtmlWebpackPlugin({
-        filename: 'index.html',
+        filename: 'index.pug',
         inject : true,
-        template: './static_src/index.html',
+        template: './static_src/index.pug',
         chunks: 'filename'
     })
 ];
@@ -118,9 +118,7 @@ module.exports = {
 											require('precss')(),
 											require('postcss-initial')(),
 											require('postcss-assets')(),
-											require('autoprefixer')({browsers: ['last 2 versions', 'ie >= 11'], cascade: false}),
-											// Build styleguide
-											require('postcss-style-guide')({dest: './static/styleguide/' + widgetName + '.html'})
+											require('autoprefixer')({browsers: ['last 2 versions', 'ie >= 11'], cascade: false})
 										];
 									}
 									return [
@@ -137,6 +135,11 @@ module.exports = {
 	                ]
 	            })
 			},
+			// html
+            {
+              test: /\.(pug|jade)$/,
+              loader: 'pug-loader'
+            },
 			// Copy images
 			{
 				test: /\.(png|jpg|gif|svg)/,
