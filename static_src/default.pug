@@ -1,5 +1,9 @@
+include ~html-webpack-template-pug/mixins.pug
+
 html
-	head
-		//- link(rel="stylesheet", href="/public/main.css")
-	body
-		block content
+    head
+        +injectChunk('main', 'css')
+    body
+        block content
+
+        +injectChunk('main', 'js')
